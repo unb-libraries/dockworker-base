@@ -1,0 +1,47 @@
+{
+  "name": "unb-libraries/dockworker-base",
+  "description": "Deploy and develop web applications via a consistent and unified workflow.",
+  "type": "library",
+  "config": {
+    "allow-plugins": {
+      "dealerdirect/phpcodesniffer-composer-installer": true
+    },
+    "preferred-install": {
+      "*": "dist"
+    }
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "require": {
+    "consolidation/annotated-command": "4.5.2",
+    "consolidation/robo": "^3",
+    "czproject/git-php": "^4",
+    "ext-curl": "*",
+    "ext-dom": "*",
+    "ext-gd": "*",
+    "ext-mbstring": "*",
+    "ext-posix": "*",
+    "ext-yaml": "*",
+    "ext-zip": "*",
+    "guzzlehttp/guzzle": "^7",
+    "http-interop/http-factory-guzzle": "^1",
+    "knplabs/github-api": "^3",
+    "nikic/php-parser": "^4",
+    "php": "^8"
+  },
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "UNB Libraries",
+      "email": "libsupport@unb.ca"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "Dockworker\\": "./src/"
+    }
+  },
+  "bin": [
+    "bin/dockworker"
+  ]
+}
