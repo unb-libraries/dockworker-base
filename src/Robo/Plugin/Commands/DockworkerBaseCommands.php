@@ -455,4 +455,12 @@ class DockworkerBaseCommands extends Tasks implements ContainerAwareInterface, L
     }
   }
 
+  protected function constructRepoPathString(array $components) {
+    array_unshift($components, $this->repoRoot);
+    return implode(
+      '/',
+      $components
+    );
+  }
+
 }
