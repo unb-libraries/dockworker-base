@@ -27,7 +27,8 @@
     "http-interop/http-factory-guzzle": "^1",
     "knplabs/github-api": "^3",
     "nikic/php-parser": "^4",
-    "php": "^8"
+    "php": "^8",
+    "twig/twig": "^3"
   },
   "license": "MIT",
   "authors": [
