@@ -23,7 +23,7 @@ trait GitHubTrait {
   /**
    * The GitHub Client.
    *
-   * @var object
+   * @var \Github\Client
    */
   protected $gitHubClient = NULL;
 
@@ -35,7 +35,7 @@ trait GitHubTrait {
   protected $gitHubRepo;
 
   /**
-   * Retrieves the github repository name from config.
+   * Retrieves the GitHub repository name from config.
    *
    * @hook init @github
    * @throws \Dockworker\DockworkerException
@@ -75,7 +75,7 @@ trait GitHubTrait {
   }
 
   /**
-   * Retrieves the github owner from config.
+   * Retrieves the GitHub owner from config.
    *
    * @hook init @github
    * @throws \Dockworker\DockworkerException
@@ -87,6 +87,11 @@ trait GitHubTrait {
     }
   }
 
+  /**
+   * Initializes the trait's properties.
+   *
+   * @throws \Dockworker\DockworkerException
+   */
   protected function initSetupGitHubTrait() {
     $this->setGitHubRepo();
     $this->setGitHubClient();
