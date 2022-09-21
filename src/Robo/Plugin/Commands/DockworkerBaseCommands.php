@@ -30,6 +30,7 @@ class DockworkerBaseCommands extends Tasks implements ContainerAwareInterface, L
   const DOCKWORKER_DATA_BASE_DIR = '.config/dockworker';
   const ERROR_INSTANCE_NAME_UNSET = 'The application name value has not been set in %s';
   const ERROR_PROJECT_PREFIX_UNSET = 'The project_prefix variable has not been set in %s';
+  const ERROR_REQUIRED_ENV_UNSET = 'The required environment variable %s (%s) was not found';
   const ERROR_UPSTREAM_IMAGE_UNSET = 'The upstream_image variable has not been set in %s';
   const ERROR_UUID_UNSET = 'The application UUID value has not been set in %s';
 
@@ -166,6 +167,31 @@ class DockworkerBaseCommands extends Tasks implements ContainerAwareInterface, L
 
     if (empty($this->instanceName)) {
       throw new DockworkerException(sprintf(self::ERROR_INSTANCE_NAME_UNSET, $this->configFile));
+    }
+  }
+
+  /**
+   * Verifies that the required local environment variables are set.
+   *
+   * @throws \Dockworker\DockworkerException
+   */
+  protected function checkRequiredEnvironmentVariables() {
+    $env_vars = Robo::Config()->get('dockworker.application.local.env_passthrough');
+
+    if (empty($env_vars)) {
+      return;
+    }
+
+    foreach ($env_vars as $env_var => $env_var_desc) {
+      if (empty(getenv($env_var))) {
+        throw new DockworkerException(
+          sprintf(
+            self::ERROR_REQUIRED_ENV_UNSET,
+            $env_var,
+            $env_var_desc
+          )
+        );
+      }
     }
   }
 
