@@ -2,12 +2,12 @@
 
 namespace Dockworker\Robo\Plugin\Commands;
 
-use Dockworker\Robo\Plugin\Commands\DockworkerBasicCommands;
+use Dockworker\Robo\Plugin\Commands\DockworkerBaseCommands;
 
 /**
  * Defines the commands used to correct permissions in the repository tree.
  */
-class ApplicationPermissionsCommands extends DockworkerBasicCommands {
+class ApplicationPermissionsCommands extends DockworkerBaseCommands {
 
   /**
    * Sets proper file permissions for this repository (uses sudo).

@@ -2,12 +2,12 @@
 
 namespace Dockworker\Robo\Plugin\Commands;
 
-use Dockworker\Robo\Plugin\Commands\DockworkerBasicCommands;
+use Dockworker\Robo\Plugin\Commands\DockworkerBaseCommands;
 
 /**
  * Defines the commands used to test this application.
  */
-class ApplicationTestCommands extends DockworkerBasicCommands {
+class ApplicationTestCommands extends DockworkerBaseCommands {
 
   /**
    * Tests this application using all testing frameworks.
