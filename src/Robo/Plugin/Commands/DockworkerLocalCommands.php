@@ -7,12 +7,12 @@ use Consolidation\AnnotatedCommand\Events\CustomEventAwareTrait;
 use Dockworker\DockworkerException;
 use Dockworker\DockworkerLogCheckerTrait;
 use Dockworker\GitRepoTrait;
-use Dockworker\Robo\Plugin\Commands\DockworkerCommands;
+use Dockworker\Robo\Plugin\Commands\DockworkerBaseCommands;
 
 /**
  * Defines the commands used to interact with a Dockworker local application.
  */
-class DockworkerLocalCommands extends DockworkerCommands implements CustomEventAwareInterface {
+class DockworkerLocalCommands extends DockworkerBaseCommands implements CustomEventAwareInterface {
 
   const ERROR_BUILDING_IMAGE = 'Error reported building image!';
   const ERROR_PULLING_UPSTREAM_IMAGE = 'Error pulling upstream image %s';
