@@ -271,6 +271,17 @@ class DockworkerBaseCommands extends Tasks implements ContainerAwareInterface, L
   }
 
   /**
+   * Sets up the required git hooks for dockworker.
+   *
+   * @command dockworker:git:setup-hooks
+   */
+  public function setupHooks() {
+      $source_dir = $this->repoRoot . "/vendor/unb-libraries/dockworker-base/data/scripts/git-hooks";
+      $target_dir = $this->repoRoot . "/.git/hooks";
+      $this->_copy("$source_dir/commit-msg", "$target_dir/commit-msg");
+  }
+
+  /**
    * Retrieves the upstream images defined in the application configuration.
    *
    * @throws \Dockworker\DockworkerException
