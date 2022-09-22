@@ -31,7 +31,7 @@ class DockworkerBaseCommands extends Tasks implements ContainerAwareInterface, L
   const ERROR_BUILDING_IMAGE = 'Error reported building image!';
   const ERROR_INSTANCE_NAME_UNSET = 'The application name value has not been set in %s';
   const ERROR_PROJECT_PREFIX_UNSET = 'The project_prefix variable has not been set in %s';
-  const ERROR_REQUIRED_ENV_UNSET = 'The required environment variable %s (%s) was not found';
+  const ERROR_REQUIRED_ENV_UNSET = 'A required environment variable %s (%s) is not set in the current shell';
   const ERROR_UPSTREAM_IMAGE_UNSET = 'The upstream_image variable has not been set in %s';
   const ERROR_UUID_UNSET = 'The application UUID value has not been set in %s';
 
