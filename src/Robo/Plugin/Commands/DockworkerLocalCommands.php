@@ -202,7 +202,6 @@ class DockworkerLocalCommands extends DockworkerBaseCommands implements CustomEv
    *   The result of the removal command.
    */
   public function removeData() {
-    $this->unSetHostFileEntries();
     $this->io()->title("Removing application data");
     return $this->taskExec('docker-compose')
       ->dir($this->repoRoot)
