@@ -292,39 +292,6 @@ class DockworkerDeploymentCommands extends DockworkerLocalCommands {
   }
 
   /**
-   * Opens a shell within this application's k8s deployment.
-   *
-   * @param string $env
-   *   The environment to open a shell to.
-   * @param string $shell
-   *   The path within pod to the shell binary to execute.
-   *
-   * @command shell:deployed
-   * @throws \Exception
-   *
-   * @return \Robo\Result
-   *   The result of the shell.
-   *
-   * @usage prod /bin/sh
-   *
-   * @kubectl
-   */
-  public function openDeploymentShell($env, $shell = '') {
-    if (empty($shell)) {
-      $shell = $this->applicationShell;
-    }
-    $pod_id = $this->k8sGetLatestPod($env, 'deployment', 'Open Shell');
-    $this->io()->note('Opening remote pod shell... Type "exit" when finished.');
-    return $this->taskExec($this->kubeCtlBin)
-      ->arg('--kubeconfig')->arg($this->kubeCtlConf)
-      ->arg('exec')->arg('-it')->arg($pod_id)
-      ->arg("--namespace={$this->kubernetesPodParentResourceNamespace}")
-      ->arg('--')
-      ->arg($shell)
-      ->run();
-  }
-
-  /**
    * Initializes, sets up a k8s resource/pods for interaction.
    *
    * @param string $env
