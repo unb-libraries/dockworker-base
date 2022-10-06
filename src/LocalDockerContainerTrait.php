@@ -40,6 +40,31 @@ trait LocalDockerContainerTrait {
   }
 
   /**
+   * Checks if the local application is running.
+   *
+   * @throws \Dockworker\DockworkerException
+   */
+  public function getLocalRunning() {
+    $container_name = $this->instanceName;
+
+    exec(
+      "docker inspect -f {{.State.Running}} $container_name 2>&1",
+      $output,
+      $return_code
+    );
+
+    // Check if container exists.
+    if ($return_code > 0) {
+      throw new DockworkerException(sprintf(self::ERROR_CONTAINER_MISSING, $container_name));
+    }
+
+    // Check if container stopped.
+    if ($output[0] == "false") {
+      throw new DockworkerException(sprintf(self::ERROR_CONTAINER_STOPPED, $container_name));
+    }
+  }
+
+  /**
    * Copy a file between a docker container and the local filesystem.
    *
    * @param string $source_path
