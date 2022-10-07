@@ -33,21 +33,42 @@ class DockworkerDockerImageDeployCommands extends DockworkerDockerImagePushComma
    */
   public function buildPushDeployEnv($env, array $options = ['use-tag' => '']) {
     $this->pushCommandInit($env);
+    $this->updateAllResourcesInK8s($env, $options);
+  }
+
+  /**
+   * Builds the image name to use when updating k8s resources.
+   *
+   * @param string $env
+   *   The environment to target.
+   * @param string[] $options
+   *   The array of available CLI options.
+   *
+   * @option $use-tag
+   *   Leveragethe specified tag.
+   *
+   * @throws \Dockworker\DockworkerException
+   *
+   * @return string
+   */
+  protected function getDeploymentResourceImageName(
+    string $env,
+    array $options = ['use-tag' => '']
+  ) : string {
     if (empty($options['use-tag'])) {
       $timestamp = date('YmdHis');
       $this->buildPushEnv($env, $timestamp);
 
       if ($this->dockerImageTagDateStamp) {
-        $image_name = "{$this->dockerImageName}:$env-$timestamp";
+       return "{$this->dockerImageName}:$env-$timestamp";
       }
       else {
-        $image_name = "{$this->dockerImageName}:$env";
+        return "{$this->dockerImageName}:$env";
       }
     }
     else {
-      $image_name = "{$this->dockerImageName}:{$options['use-tag']}";
+      return "{$this->dockerImageName}:{$options['use-tag']}";
     }
-    $this->updateAllResourcesInK8s($env);
   }
 
   /**
@@ -58,7 +79,7 @@ class DockworkerDockerImageDeployCommands extends DockworkerDockerImagePushComma
    *
    * @throws \Dockworker\DockworkerException
    */
-  protected function updateAllResourcesInK8s(string $env) : void {
+  protected function updateAllResourcesInK8s(string $env, array $options) : void {
     $resource_deploy_path =  "$this->repoRoot/.dockworker/deployment/k8s/$env";
     $resource_files = glob("$resource_deploy_path/*.yaml");
     foreach($resource_files as $resource_file) {
@@ -66,13 +87,15 @@ class DockworkerDockerImageDeployCommands extends DockworkerDockerImagePushComma
       $this->notifyUserK8sResourceUpdate($resource_basename);
       switch ($resource_basename) {
         case 'deployment':
-          $this->applyKubeDeploymentUpdate($this->repoRoot, $env, $image_name);
+          $this->applyKubeDeploymentUpdate(
+            $this->repoRoot,
+            $env,
+            $this->getDeploymentResourceImageName($env, $options)
+          );
           $this->say('Checking for successful deployment...');
           $this->setRunOtherCommand("k8s:deployment:status $env");
           break;
         case 'cronjob':
-          $this->setRunOtherCommand("k8s:deployment:delete-apply $resource_file");
-          break;
         case 'backup':
           $this->setRunOtherCommand("k8s:deployment:delete-apply $resource_file");
           break;
