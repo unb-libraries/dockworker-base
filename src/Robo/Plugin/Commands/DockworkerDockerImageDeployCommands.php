@@ -47,33 +47,55 @@ class DockworkerDockerImageDeployCommands extends DockworkerDockerImagePushComma
     else {
       $image_name = "{$this->dockerImageName}:{$options['use-tag']}";
     }
+    $this->updateAllResourcesInK8s($env);
+  }
 
-    $this->say('Updating deployment configuration..');
-    $deployment_file = $this->applyKubeDeploymentUpdate($this->repoRoot, $env, $image_name);
-
-    $cron_file = static::getKubernetesFileNameFromBranch($this->repoRoot, $env, 'cronjob');
-    if (file_exists($cron_file)) {
-      $this->say('Updating cron configuration..');
-      $cron_file = $this->getTokenizedKubeFile($this->repoRoot, $env, $image_name, 'cronjob');
-      $this->setRunOtherCommand("k8s:deployment:delete-apply $cron_file");
+  /**
+   * Updates all k8s resources that are defined in this repository.
+   *
+   * @param string $env
+   *   The environment to target.
+   *
+   * @throws \Dockworker\DockworkerException
+   */
+  protected function updateAllResourcesInK8s(string $env) : void {
+    $resource_deploy_path =  "$this->repoRoot/.dockworker/deployment/k8s/$env";
+    $resource_files = glob("$resource_deploy_path/*.yaml");
+    foreach($resource_files as $resource_file) {
+      $resource_basename = basename($resource_file, '.yaml');
+      $this->notifyUserK8sResourceUpdate($resource_basename);
+      switch ($resource_basename) {
+        case 'deployment':
+          $this->applyKubeDeploymentUpdate($this->repoRoot, $env, $image_name);
+          $this->say('Checking for successful deployment...');
+          $this->setRunOtherCommand("k8s:deployment:status $env");
+          break;
+        case 'cronjob':
+          $this->setRunOtherCommand("k8s:deployment:delete-apply $resource_file");
+          break;
+        case 'backup':
+          $this->setRunOtherCommand("k8s:deployment:delete-apply $resource_file");
+          break;
+        case 'testing':
+          $this->setRunOtherCommand("k8s:deployment:create-test-secrets");
+          $this->setRunOtherCommand("k8s:deployment:delete-apply $resource_file");
+          break;
+        default:
+          $this->say("Resource type $resource_basename is not known to dockworker. Skipping...");
+      }
     }
+  }
 
-    $backup_file = static::getKubernetesFileNameFromBranch($this->repoRoot, $env, 'backup');
-    if (file_exists($backup_file)) {
-      $this->say('Updating backup configuration..');
-      $this->setRunOtherCommand("k8s:deployment:delete-apply $backup_file");
-    }
-
-    $testing_file = static::getKubernetesFileNameFromBranch($this->repoRoot, $env, 'testing');
-    if (file_exists($testing_file)) {
-      $this->say('Updating test configuration..');
-      $this->setRunOtherCommand("k8s:deployment:create-test-secrets");
-      $this->setRunOtherCommand("k8s:deployment:delete-apply $testing_file");
-    }
-
-    $this->say('Checking for successful deployment..');
-    $deploy_namespace = static::getKubernetesDeploymentFileNamespace($deployment_file);
-    $this->setRunOtherCommand("k8s:deployment:status $deploy_namespace");
+  /**
+   * Notifies the end user that a resource is about to be updated in k8s.
+   *
+   * @param string $resource_type
+   *   The type of resource to notify the user about.
+   *
+   * @return void
+   */
+  protected function notifyUserK8sResourceUpdate($resource_type) {
+    $this->say("Updating $resource_type in k8s...");
   }
 
 }
