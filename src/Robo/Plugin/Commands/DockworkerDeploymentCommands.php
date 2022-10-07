@@ -203,7 +203,7 @@ class DockworkerDeploymentCommands extends DockworkerLocalCommands {
   }
 
   /**
-   * Creates required secrets for cypress testing.
+   * Creates required secrets for e2e status.lib cypress testing.
    *
    * @command k8s:deployment:create-test-secrets
    * @throws \Dockworker\DockworkerException
@@ -211,28 +211,31 @@ class DockworkerDeploymentCommands extends DockworkerLocalCommands {
    * @kubectl
    */
   public function createTestSecrets() {
-    $this->kubectlExec(
-      'delete',
-      [
-        'secret',
-        $this->instanceSlug . '-cypress',
-        '--ignore-not-found=true',
-        '--namespace=prod',
-      ],
-      TRUE
-    );
-    $this->kubectlExec(
-      'create',
-      [
-        'secret',
-        'generic',
-        $this->instanceSlug . '-cypress',
-        "--from-file=file=$this->repoRoot/tests/cypress/spec.js",
-        "--from-literal=file_name={$this->instanceSlug}_spec.js",
-        '--namespace=prod',
-      ],
-      TRUE
-    );
+    $spec_file = "$this->repoRoot/tests/cypress/status/e2e/$this->instanceSlug.cy.js";
+    if (file_exists($spec_file)) {
+      $this->kubectlExec(
+        'delete',
+        [
+          'secret',
+          $this->instanceSlug . '-cypress',
+          '--ignore-not-found=true',
+          '--namespace=prod',
+        ],
+        TRUE
+      );
+      $this->kubectlExec(
+        'create',
+        [
+          'secret',
+          'generic',
+          $this->instanceSlug . '-cypress',
+          "--from-file=file=$spec_file",
+          "--from-literal=file_name=$this->instanceSlug.cy.js",
+          '--namespace=prod',
+        ],
+        TRUE
+      );
+    }
   }
 
   /**
