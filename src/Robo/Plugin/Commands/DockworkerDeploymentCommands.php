@@ -227,7 +227,7 @@ class DockworkerDeploymentCommands extends DockworkerLocalCommands {
         'delete',
         [
           'secret',
-          this->instanceSlug . '-cypress',
+          $this->instanceSlug . '-cypress',
           '--ignore-not-found=true',
           '--namespace=prod',
         ],
@@ -238,7 +238,7 @@ class DockworkerDeploymentCommands extends DockworkerLocalCommands {
         [
           'secret',
           'generic',
-          this->instanceSlug. '-cypress',
+          $this->instanceSlug. '-cypress',
           "--from-file=file=$tmp_dir/spec.cy.js",
           "--from-literal=file_name=$this->instanceSlug.cy.js",
           '--namespace=prod',
