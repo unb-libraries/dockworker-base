@@ -211,13 +211,16 @@ class DockworkerDeploymentCommands extends DockworkerLocalCommands {
    * @kubectl
    */
   public function createTestSecrets() {
-    $spec_file = "$this->repoRoot/tests/cypress/status/e2e/$this->instanceSlug.cy.js";
-    if (file_exists($spec_file)) {
+    $e2e_test_path =  "$this->repoRoot/tests/cypress/status/e2e";
+    $e2e_test_files = glob("$e2e_test_path/*.cy.js");
+    foreach($e2e_test_files as $e2e_test_file) {
+      $test_slug = basename($e2e_test_file, '.cy.js');
+      $test_file_name = basename($e2e_test_file);
       $this->kubectlExec(
         'delete',
         [
           'secret',
-          $this->instanceSlug . '-cypress',
+          $test_slug . '-cypress',
           '--ignore-not-found=true',
           '--namespace=prod',
         ],
@@ -228,9 +231,9 @@ class DockworkerDeploymentCommands extends DockworkerLocalCommands {
         [
           'secret',
           'generic',
-          $this->instanceSlug . '-cypress',
-          "--from-file=file=$spec_file",
-          "--from-literal=file_name=$this->instanceSlug.cy.js",
+          $test_slug . '-cypress',
+          "--from-file=file=$e2e_test_file",
+          "--from-literal=file_name=$test_file_name",
           '--namespace=prod',
         ],
         TRUE
