@@ -6,6 +6,7 @@ use Dockworker\DockerImageTrait;
 use Dockworker\DockworkerException;
 use Dockworker\KubernetesDeploymentTrait;
 use Dockworker\Robo\Plugin\Commands\DockworkerLocalCommands;
+use Dockworker\TemporaryDirectoryTrait;
 use Robo\Robo;
 use Robo\Symfony\ConsoleIO;
 
@@ -16,6 +17,7 @@ class DockworkerDeploymentCommands extends DockworkerLocalCommands {
 
   use DockerImageTrait;
   use KubernetesDeploymentTrait;
+  use TemporaryDirectoryTrait;
 
   /**
    * Retrieves the rollout status for this application's k8s deployment.
@@ -213,14 +215,19 @@ class DockworkerDeploymentCommands extends DockworkerLocalCommands {
   public function createTestSecrets() {
     $e2e_test_path =  "$this->repoRoot/tests/cypress/status/e2e";
     $e2e_test_files = glob("$e2e_test_path/*.cy.js");
+    $e2e_test_content = '';
     foreach($e2e_test_files as $e2e_test_file) {
-      $test_slug = basename($e2e_test_file, '.cy.js');
-      $test_file_name = basename($e2e_test_file);
+      $e2e_test_content .= file_get_contents($e2e_test_file);
+      $e2e_test_content .= "\n\n";
+    }
+    if (!empty($e2e_test_content)) {
+      $tmp_dir = TemporaryDirectoryTrait::tempdir();
+      file_put_contents("$tmp_dir/spec.cy.js", $e2e_test_content);
       $this->kubectlExec(
         'delete',
         [
           'secret',
-          $test_slug . '-cypress',
+          this->instanceSlug . '-cypress',
           '--ignore-not-found=true',
           '--namespace=prod',
         ],
@@ -231,9 +238,9 @@ class DockworkerDeploymentCommands extends DockworkerLocalCommands {
         [
           'secret',
           'generic',
-          $test_slug . '-cypress',
-          "--from-file=file=$e2e_test_file",
-          "--from-literal=file_name=$test_file_name",
+          this->instanceSlug. '-cypress',
+          "--from-file=file=$tmp_dir/spec.cy.js",
+          "--from-literal=file_name=$this->instanceSlug.cy.js",
           '--namespace=prod',
         ],
         TRUE
