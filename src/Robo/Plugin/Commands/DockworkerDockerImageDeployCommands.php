@@ -84,8 +84,9 @@ class DockworkerDockerImageDeployCommands extends DockworkerDockerImagePushComma
     $resource_files = glob("$resource_deploy_path/*.yaml");
     foreach($resource_files as $resource_file) {
       $resource_basename = basename($resource_file, '.yaml');
-      $this->notifyUserK8sResourceUpdate($resource_basename);
-      switch ($resource_basename) {
+      $resource_type = explode("-", $resource_basename)[0];
+      $this->notifyUserK8sResourceUpdate($resource_type);
+      switch ($resource_type) {
         case 'deployment':
           $this->applyKubeDeploymentUpdate(
             $this->repoRoot,
@@ -104,7 +105,7 @@ class DockworkerDockerImageDeployCommands extends DockworkerDockerImagePushComma
           $this->setRunOtherCommand("k8s:deployment:delete-apply $resource_file");
           break;
         default:
-          $this->say("Resource type $resource_basename is not known to dockworker. Skipping...");
+          $this->say("Resource type $resource_type is not known to dockworker. Skipping...");
       }
     }
   }
