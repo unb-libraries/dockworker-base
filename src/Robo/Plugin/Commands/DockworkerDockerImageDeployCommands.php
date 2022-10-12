@@ -97,6 +97,13 @@ class DockworkerDockerImageDeployCommands extends DockworkerDockerImagePushComma
           $this->setRunOtherCommand("k8s:deployment:status $env");
           break;
         case 'cronjob':
+          $cron_file = $this->getTokenizedKubeFile(
+            $this->repoRoot,
+            $env,
+            $this->getDeploymentResourceImageName($env, $options),
+            'cronjob'
+          );
+          $this->setRunOtherCommand("k8s:deployment:delete-apply $cron_file");
         case 'backup':
           $this->setRunOtherCommand("k8s:deployment:delete-apply $resource_file");
           break;
