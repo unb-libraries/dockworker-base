@@ -229,7 +229,7 @@ class DockworkerDeploymentCommands extends DockworkerLocalCommands {
           'secret',
           $this->instanceSlug . '-cypress',
           '--ignore-not-found=true',
-          '--namespace=prod',
+          '--namespace=testing',
         ],
         TRUE
       );
@@ -241,7 +241,7 @@ class DockworkerDeploymentCommands extends DockworkerLocalCommands {
           $this->instanceSlug. '-cypress',
           "--from-file=file=$tmp_dir/spec.cy.js",
           "--from-literal=file_name=$this->instanceSlug.cy.js",
-          '--namespace=prod',
+          '--namespace=testing',
         ],
         TRUE
       );
