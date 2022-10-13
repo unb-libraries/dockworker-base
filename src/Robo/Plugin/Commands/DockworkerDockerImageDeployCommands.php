@@ -104,6 +104,7 @@ class DockworkerDockerImageDeployCommands extends DockworkerDockerImagePushComma
             'cronjob'
           );
           $this->setRunOtherCommand("k8s:deployment:delete-apply $cron_file");
+          break;
         case 'backup':
           $this->setRunOtherCommand("k8s:deployment:delete-apply $resource_file");
           break;
