@@ -96,6 +96,9 @@ class DockworkerDeploymentCronCommands extends DockworkerDeploymentCommands {
    * @param string $env
    *   The environment to check the logs in.
    *
+   * @option $all
+   *   Check logs from all cron pods, not only the latest.
+   *
    * @command cron:logs:check:deployed
    * @throws \Exception
    *
@@ -103,8 +106,11 @@ class DockworkerDeploymentCronCommands extends DockworkerDeploymentCommands {
    *
    * @kubectl
    */
-  public function checkDeploymentCronLogs($env) {
+  public function checkDeploymentCronLogs($env, array $options = ['all' => FALSE]) {
     $this->k8sInitSetupPods($env, 'cronjob', 'Cron Log Check');
+    if (!$options['all']) {
+      $this->kubernetesFilterPodsOnlyLatest();
+    }
     $this->getCustomLogTriggersExceptions('cronjob');
     $this->kubernetesCheckLogsFromCurrentPods();
   }
