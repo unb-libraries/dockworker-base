@@ -4,6 +4,7 @@ namespace Dockworker\Robo\Plugin\Commands;
 
 use Dockworker\KubernetesDeploymentTrait;
 use Dockworker\Robo\Plugin\Commands\DockworkerBaseCommands;
+use Robo\Robo;
 
 /**
  * Defines a class to write a standardized CI workflow file to a repository.
@@ -23,8 +24,8 @@ class DockworkerBaseCIServicesWorkflowCommands extends DockworkerBaseCommands {
    * @aliases uciw
    */
   public function setApplicationCIServicesWorkflowFile() {
-    $workflow_type = getGitHubActionsWorkflowType();
-    $workflow_source = getGitHubActionsWorkflowSource();
+    $workflow_type = $this->getGitHubActionsWorkflowType();
+    $workflow_source = $this->getGitHubActionsWorkflowSource();
 
     $this->CIServicesWorkflowSourcePath = $this->constructRepoPathString([
       "vendor/unb-libraries/$workflow_source/data/gh-actions",
@@ -61,7 +62,7 @@ class DockworkerBaseCIServicesWorkflowCommands extends DockworkerBaseCommands {
    * Gets the gh-actions deployment type for this application.
    */
   protected function getGitHubActionsWorkflowType() : string {
-    $workflow_type = Robo::Config()->get('dockworker.deployment.workflow');
+    $workflow_type = Robo::Config()->get('dockworker.deployment.workflow.type');
     if (empty($workflow_type)) {
       return 'deployment-workflow';
     }
@@ -74,7 +75,7 @@ class DockworkerBaseCIServicesWorkflowCommands extends DockworkerBaseCommands {
    * Gets the gh-actions deployment source package for this application.
    */
   protected function getGitHubActionsWorkflowSource() : string {
-    $workflow_source = Robo::Config()->get('dockworker.deployment.source');
+    $workflow_source = Robo::Config()->get('dockworker.deployment.workflow.source');
     if (empty($workflow_source)) {
       return 'dockworker';
     }
