@@ -52,7 +52,7 @@ class DockworkerDeploymentCronCommands extends DockworkerDeploymentCommands {
    * @kubectl
    */
   public function runDeploymentCronPod($env, array $options = ['no-write-logs' => FALSE]) {
-    $this->deployedK8sResourceInit($this->repoRoot, $env);
+    $this->deployedK8sResourceInit($this->repoRoot, $env, 'cronjob');
     $logs = $this->getRunDeploymentCronPodLogs($env);
     if (!$options['no-write-logs']) {
       $this->io()->block($logs);
