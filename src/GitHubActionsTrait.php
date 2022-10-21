@@ -139,4 +139,30 @@ trait GitHubActionsTrait {
     $this->setGitHubActionsWorkflow();
   }
 
+  /**
+   * Gets the gh-actions deployment type for this application.
+   */
+  protected function getGitHubActionsWorkflowType() : string {
+    $workflow_type = Robo::Config()->get('dockworker.deployment.workflow');
+    if (empty($workflow_type)) {
+      return 'deployment-workflow';
+    }
+    else {
+      return $workflow_type;
+    }
+  }
+
+  /**
+   * Gets the gh-actions deployment source package for this application.
+   */
+  protected function getGitHubActionsWorkflowSource() : string {
+    $workflow_source = Robo::Config()->get('dockworker.deployment.source');
+    if (empty($workflow_source)) {
+      return 'dockworker';
+    }
+    else {
+      return $workflow_source;
+    }
+  }
+
 }

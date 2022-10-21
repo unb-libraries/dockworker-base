@@ -23,27 +23,19 @@ class DockworkerBaseCIServicesWorkflowCommands extends DockworkerBaseCommands {
    * @aliases uciw
    */
   public function setApplicationCIServicesWorkflowFile() {
-    foreach ($this->getCiServicesWorkflowFileDefinitions() as $workflow) {
-      $this->CIServicesWorkflowSourcePath = $this->constructRepoPathString([
-        $workflow['source_path'],
-        $workflow['file_name'],
-      ]);
-      $this->CIServicesWorkflowFilepath = $this->constructRepoPathString([
-        $workflow['repo_path'],
-        $workflow['file_name'],
-      ]);
-      $this->writeApplicationCIServicesWorkflowFile();
-    }
-  }
+    $workflow_type = getGitHubActionsWorkflowType();
+    $workflow_source = getGitHubActionsWorkflowSource();
 
-  /**
-   * Defines which CI Services workflow files exist for this application.
-   *
-   * @return string[][]
-   *   An associative array of workflow files supporting this application.
-   */
-  protected function getCiServicesWorkflowFileDefinitions() : array {
-    return [];
+    $this->CIServicesWorkflowSourcePath = $this->constructRepoPathString([
+      "vendor/unb-libraries/$workflow_source/data/gh-actions",
+      "$workflow_type.yaml",
+    ]);
+
+    $this->CIServicesWorkflowFilepath = $this->constructRepoPathString([
+      '.github/workflows',
+      'deployment-workflow.yaml',
+    ]);
+    $this->writeApplicationCIServicesWorkflowFile();
   }
 
   /**
