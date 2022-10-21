@@ -73,7 +73,7 @@ trait KubernetesDeploymentTrait {
    */
   protected function getDeployableEnvironments() {
     return Robo::Config()
-      ->get('dockworker.deployment.environments', []);
+      ->get('dockworker.deployment.environments', ['prod']);
   }
 
   /**

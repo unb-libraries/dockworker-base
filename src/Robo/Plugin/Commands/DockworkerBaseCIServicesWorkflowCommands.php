@@ -42,14 +42,17 @@ class DockworkerBaseCIServicesWorkflowCommands extends DockworkerBaseCommands {
    * Writes out the CI Services workflow file.
    */
   protected function writeApplicationCIServicesWorkflowFile() {
+    // Set Name.
     $this->setInstanceName();
     $tokenized_workflow_contents = file_get_contents($this->CIServicesWorkflowSourcePath);
     $workflow_contents = str_replace('INSTANCE_NAME', $this->instanceName, $tokenized_workflow_contents);
-    $deployable_env_string = '';
-    foreach ($this->getDeployableEnvironments() as $deploy_env) {
-      $deployable_env_string .= "      refs/heads/$deploy_env\n";
-    }
-    $workflow_contents = str_replace('DEPLOY_BRANCHES', rtrim($deployable_env_string), $workflow_contents);
+
+    // Set Branches.
+    $deploy_branches = $this->getDeployableEnvironments();
+    $deploy_branches_string = '"' . implode('","', $deploy_branches) . '"';
+    $workflow_contents = str_replace('INSTANCE_DEPLOY_BRANCHES', $deploy_branches_string, $workflow_contents);
+
+    // Write File.
     file_put_contents($this->CIServicesWorkflowFilepath, $workflow_contents);
     $this->say('The updated GitHub actions workflow file has been written.');
   }
