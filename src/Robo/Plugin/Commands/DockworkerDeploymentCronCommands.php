@@ -65,6 +65,8 @@ class DockworkerDeploymentCronCommands extends DockworkerDeploymentCommands {
    * @param string $env
    *   The environment to execute the cron in.
    *
+   * @option $timeout
+   *   The amount of time to allow cron to run before failing.
    * @option $write-successful-logs
    *   Display logs even if no errors found.
    *
@@ -75,7 +77,7 @@ class DockworkerDeploymentCronCommands extends DockworkerDeploymentCommands {
    *
    * @kubectl
    */
-  public function runCheckDeploymentCronPod($env, array $options = ['write-successful-logs' => FALSE]) {
+  public function runCheckDeploymentCronPod($env, array $options = ['timeout' => '300', 'write-successful-logs' => FALSE]) {
     $this->deployedK8sResourceInit($this->repoRoot, $env);
     $logs = $this->getRunDeploymentCronPodLogs($env);
     $this->checkLogForErrors('Manual Cron Pod', $logs);
@@ -98,6 +100,8 @@ class DockworkerDeploymentCronCommands extends DockworkerDeploymentCommands {
    *
    * @option $all
    *   Check logs from all cron pods, not only the latest.
+   * @option $timeout
+   *   The amount of time to allow cron to run before failing.
    *
    * @command cron:logs:check:deployed
    * @throws \Exception
@@ -106,7 +110,7 @@ class DockworkerDeploymentCronCommands extends DockworkerDeploymentCommands {
    *
    * @kubectl
    */
-  public function checkDeploymentCronLogs($env, array $options = ['all' => FALSE]) {
+  public function checkDeploymentCronLogs($env, array $options = ['all' => FALSE, 'timeout' => '300']) {
     $this->k8sInitSetupPods($env, 'cronjob', 'Cron Log Check');
     if (!$options['all']) {
       $this->kubernetesFilterPodsOnlyLatest();
@@ -120,11 +124,13 @@ class DockworkerDeploymentCronCommands extends DockworkerDeploymentCommands {
    *
    * @param string $env
    *   The environment to run the cron pod in.
+   * @param integer $timeout
+   *   The amount of time to wait for the cron job to complete before erroring.
    *
    * @return string
    *   The logs from the cron run.
    */
-  protected function getRunDeploymentCronPodLogs($env) {
+  protected function getRunDeploymentCronPodLogs($env, $timeout = 300) {
     $delete_job_cmd = sprintf(
       $this->kubeCtlBin . " --kubeconfig $this->kubeCtlConf" . ' delete job/manual-dockworker-%s --ignore-not-found=true --namespace=%s',
       $this->deployedK8sResourceName,
@@ -143,7 +149,7 @@ class DockworkerDeploymentCronCommands extends DockworkerDeploymentCommands {
     shell_exec($create_job_cmd);
 
     $wait_job_cmd = sprintf(
-      $this->kubeCtlBin . " --kubeconfig $this->kubeCtlConf" . ' wait --for=condition=complete job/manual-dockworker-%s --namespace=%s',
+      $this->kubeCtlBin . " --kubeconfig $this->kubeCtlConf" . " wait --for=condition=complete --timeout={$timeout}s job/manual-dockworker-%s --namespace=%s",
       $this->deployedK8sResourceName,
       $this->deployedK8sResourceNameSpace
     );
