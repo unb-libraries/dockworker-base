@@ -27,7 +27,8 @@ class DockworkerBaseCommands extends Tasks implements ContainerAwareInterface, L
   use ContainerAwareTrait;
   use LoggerAwareTrait;
 
-  const DOCKWORKER_DATA_BASE_DIR = '.config/dockworker';
+  const DOCKWORKER_GLOBAL_DATA_BASE_DIR = '.config/dockworker';
+  const DOCKWORKER_LOCAL_DATA_BASE_DIR = '.dockworker/data';
   const ERROR_BUILDING_IMAGE = 'Error reported building image!';
   const ERROR_INSTANCE_NAME_UNSET = 'The application name value has not been set in %s';
   const ERROR_PROJECT_PREFIX_UNSET = 'The project_prefix variable has not been set in %s';
@@ -69,6 +70,13 @@ class DockworkerBaseCommands extends Tasks implements ContainerAwareInterface, L
    * @var string
    */
   protected $dockworkerApplicationDataDir;
+
+  /**
+   * The global dockworker data directory.
+   *
+   * @var string
+   */
+  protected $dockworkerGlobalDataDir;
 
   /**
    * The instance name of the application.
@@ -197,13 +205,26 @@ class DockworkerBaseCommands extends Tasks implements ContainerAwareInterface, L
   }
 
   /**
+   * Sets the global data dir.
+   *
+   * @hook init
+   * @throws \Dockworker\DockworkerException
+   */
+  public function setDockworkerGlobalDataDir() {
+    $this->dockworkerGlobalDataDir = implode('/', [$this->userHomeDir, self::DOCKWORKER_GLOBAL_DATA_BASE_DIR, $this->instanceName]);
+    if (!file_exists($this->dockworkerGlobalDataDir)) {
+      mkdir($this->dockworkerGlobalDataDir, 0755, TRUE);
+    }
+  }
+
+  /**
    * Sets the application data dirs.
    *
    * @hook init
    * @throws \Dockworker\DockworkerException
    */
   public function setApplicationDataDir() {
-    $this->dockworkerApplicationDataDir = implode('/', [$this->userHomeDir, self::DOCKWORKER_DATA_BASE_DIR, $this->instanceName]);
+    $this->dockworkerApplicationDataDir = implode('/', [$this->repoRoot, self::DOCKWORKER_LOCAL_DATA_BASE_DIR]);
     if (!file_exists($this->dockworkerApplicationDataDir)) {
       mkdir($this->dockworkerApplicationDataDir, 0755, TRUE);
     }

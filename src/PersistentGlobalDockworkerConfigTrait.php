@@ -54,7 +54,7 @@ trait PersistentGlobalDockworkerConfigTrait {
       '/',
       [
         $this->userHomeDir,
-        self::DOCKWORKER_DATA_BASE_DIR,
+        self::DOCKWORKER_GLOBAL_DATA_BASE_DIR,
         'dockworker.yml',
       ]
     );
