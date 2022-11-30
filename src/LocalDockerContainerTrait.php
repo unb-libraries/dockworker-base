@@ -34,7 +34,8 @@ trait LocalDockerContainerTrait {
       $return_code
     );
     if ($return_code != 0 && $except_on_error) {
-      throw new DockworkerException("Local docker command [$command] returned error code $return_code : $cmd_output.");
+      $msg = implode("\n", $cmd_output);
+      throw new DockworkerException("Local docker command [$command] returned error code $return_code : $msg.");
     }
     return $cmd_output;
   }
