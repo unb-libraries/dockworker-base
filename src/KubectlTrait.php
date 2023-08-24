@@ -85,7 +85,7 @@ trait KubectlTrait {
    * @throws \Dockworker\DockworkerException
    */
   public function checkKubeCtlConnection() {
-    $this->kubectlExec('api-resources', [], FALSE, FALSE);
+    $this->kubectlExec('api-versions', [], FALSE, FALSE);
   }
 
   /**
